@@ -13,6 +13,7 @@ from library.ChromeHandler import ChromeHandler
 def main():
     """Main function to automate Chrome tasks."""
     try:
+        start_time = time.time()
         cwd_path = os.getcwd()
         config_path = cwd_path.replace('DevFiles', 'BotConfig\\config.ini')
         config = Config(filename=config_path)
@@ -26,10 +27,11 @@ def main():
             logger.error("Failed to start Chrome.")
             sys.exit(1)
 
-        if not chrome_handler.select_profile(profile_index=int(config.chrome_config.profile_index)):
-            logger.error("Failed to select profile.")
-            chrome_handler.kill_all_chrome()
-            sys.exit(1)
+        if str(config.chrome_config.direct_chrome).lower() != 'true':
+            if not chrome_handler.select_profile(profile_index=int(config.chrome_config.profile_index)):
+                logger.error("Failed to select profile.")
+                chrome_handler.kill_all_chrome()
+                sys.exit(1)
 
         if not chrome_handler.maximise_chrome():
             logger.error("Failed to maximize Chrome.")
@@ -43,6 +45,9 @@ def main():
 
         chrome_handler.kill_all_chrome()
         logger.info("Chrome automation completed successfully.")
+        end_time = time.time()
+
+        logger.info(f'# Total time taken in execution : {end_time - start_time}')
 
     except Exception as e:
         logger.error("An unexpected error occurred.", exc_info=True)
@@ -83,6 +88,7 @@ def process_excel_file(excel, config, chrome_handler, logger):
             if number_extracted:
                 number_lst.append(entry)
             else:
+                entry['Link'] = row['Link']
                 error_lst.append(entry)
 
             pg.hotkey('ctrl', 'w')
@@ -146,9 +152,10 @@ def archive_file(excel, config):
 def generate_file_name(folder, file_name):
     """Generate unique file name to avoid conflicts."""
     process_file_path = os.path.join(folder, file_name)
-    counter = 0
+    counter = 1
     while os.path.exists(process_file_path):
         base_name, ext = os.path.splitext(file_name)
+        base_name = str(base_name).replace(f'_{counter-1}','')
         process_file_path = os.path.join(folder, f"{base_name}_{counter}{ext}")
         counter += 1
     return process_file_path
