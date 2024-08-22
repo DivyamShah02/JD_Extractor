@@ -53,6 +53,17 @@ def main():
         logger.error("An unexpected error occurred.", exc_info=True)
         sys.exit(1)
 
+def write_in_url_bar(value):
+    try:
+        pg.hotkey('ctrl', 'l')
+        pg.hotkey('ctrl', 'a')
+        pg.press('backspace')
+        pg.write(value)
+        time.sleep(0.2)
+    
+    except Exception as e:
+        pass
+
 def process_excel_file(excel, config, chrome_handler, logger):
     """Process each Excel file for data extraction."""
     try:
@@ -61,6 +72,7 @@ def process_excel_file(excel, config, chrome_handler, logger):
         error_lst = []
 
         for ind, row in df.iterrows():
+            write_in_url_bar(value=f'{ind+1}')
             pg.hotkey('ctrl', 't')
             time.sleep(0.3)
 

@@ -46,7 +46,7 @@ alpha_col = {
     'y':24,
     'z':25,
 }
-selected_columns = df.iloc[:, [alpha_col['a'], alpha_col['n'], alpha_col['o']]]
+selected_columns = df.iloc[:, [alpha_col['a'], alpha_col['e'], alpha_col['k']]]
 # Rename the selected columns
 
 new_column_names = ['Link', 'Name', 'Address']
